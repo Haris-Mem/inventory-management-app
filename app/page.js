@@ -48,7 +48,9 @@ export default function Home() {
     }, [])
 
     const addItem = async (item) => {
-      const docRef = doc(collection(firestore, 'inventory'), item)
+       // Normalize the item name
+      const normalizedItemName = item.toLowerCase().replace(/^[^a-z]/, '').split('')[0].toUpperCase() + item.slice(1).toLowerCase();
+      const docRef = doc(collection(firestore, 'inventory'), normalizedItemName)
       const docSnap = await getDoc(docRef)
       if (docSnap.exists()) {
         const { quantity } = docSnap.data()
