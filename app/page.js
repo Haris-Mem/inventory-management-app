@@ -28,10 +28,14 @@ const style = {
   gap: 3,
 }
 
+
+
+
 export default function Home() {
     const [inventory, setInventory] = useState([])
     const [open, setOpen] = useState(false)
     const [itemName, setItemName] = useState('')
+    const [searchInput, setSearchInput] = useState('');
 
     const updateInventory = async () => {
       const snapshot = query(collection(firestore, 'inventory'))
@@ -43,6 +47,18 @@ export default function Home() {
       setInventory(inventoryList)
     }
     
+    useEffect(() => {
+      if (searchInput === '') {
+        updateInventory(); // Reset to full inventory if search input is cleared
+      } else {
+        const filteredInventory = inventory.filter(item =>
+          item.name.toLowerCase().includes(searchInput.toLowerCase())
+        );
+        setInventory(filteredInventory); // Update the displayed inventory
+      }
+    }, [searchInput]); // Depend on searchInput to re-run this effect
+    
+
     useEffect(() => {
       updateInventory()
     }, [])
@@ -88,6 +104,14 @@ export default function Home() {
         alignItems={'center'}
         gap={2}
       >
+        <TextField
+        id="outlined-basic"
+        label="Search"
+        variant="outlined"
+        fullWidth
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+      />
         <Modal
           open={open}
           onClose={handleClose}
